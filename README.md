@@ -1,28 +1,22 @@
-# Pento tech challenge
+# This is Full stack app made for Pento tech challenge
 
-Thanks for taking the time to do our tech challenge. 
+### to run locally:
 
-The challenge is to build a small full stack web app, that can help a freelancer track their time.
+- frontend
+cd frontend && npm start
+open your browser and navigate to http://localhost:1234
 
-It should satisfy these user stories:
+- backend
+cd backend && npm start
 
-- As a user, I want to be able to start a time tracking session
-- As a user, I want to be able to stop a time tracking session
-- As a user, I want to be able to name my time tracking session
-- As a user, I want to be able to save my time tracking session when I am done with it
-- As a user, I want an overview of my sessions for the day, week and month
-- As a user, I want to be able to close my browser and shut down my computer and still have my sessions visible to me when I power it up again.
+In the frontend you can add a new project to the list, by entering it to the input under "Projects" and clicking "Add". Then click it in the list to make it active and start tracking time. In the list total time spent on the projects are indicated for every project. Current project section displays nt current session time. It's reset every time new project is getting active. The data is being saved to local storage constantly on any change, so that if you close your browser it will be restored on the next app startup. 
 
-## Getting started
+The overview tab allows to see one's progress per project for chosen date range. Overview currently lists sessions for date range, but can be easily adjusted to show a chart. 
 
-You can fork this repo and use the fork as a basis for your project. We don't have any requirements on what stack you use to solve the task, so there is nothing set up beforehand.
+Currently the client sends session data to the backend once the user stops the session. The backend replies with success but doesn't actually save the data anywhere. 
 
-## Timing
+### to check the timetracker out remotely
 
-- Don't spend more than a days work on this challenge. We're not looking for perfection, rather try to show us something special and have reasons for your decisions.
-- Get back to us when you have a timeline for when you are done.
+https://terreb.github.io/tech-challenge-time/frontend/dist/index.html
 
-## Notes
-
- - This is technically possible to implement only on the frontend, but please take the opportunity to show your skills on the entire stack 
- - Please focus more on code quality, building a robust service and such, than on the UI.
+(currently only frontend is deployed remotely)
