@@ -23,10 +23,10 @@ class App extends React.Component {
         super( props );
 
         const overviewStartDate = new Date();
-        overviewStartDate.setHours(0,0,0,0);
+        overviewStartDate.setHours( 0, 0, 0, 0 );
 
         const overviewEndDate = addDays( 6 )( new Date() );
-        overviewEndDate.setHours(23,59,59,0);
+        overviewEndDate.setHours( 23, 59, 59, 0 );
 
         this.state = {
             newProjectName: '',
@@ -79,11 +79,11 @@ class App extends React.Component {
         const lastActiveProjectIndex = JSON.parse( localStorage.getItem( 'lastActiveProjectIndex' ) || 'null' );
 
         // convert date strings to date objects
-        for (let p of projects) {
+        for ( let p of projects ) {
             const { sessions } = p;
-            for (let s of sessions) {
-                s.startTime = new Date(s.startTime);
-                s.endTime = new Date(s.endTime);
+            for ( let s of sessions ) {
+                s.startTime = new Date( s.startTime );
+                s.endTime = new Date( s.endTime );
             }
         }
 
@@ -91,17 +91,30 @@ class App extends React.Component {
     };
 
     onDataChange = () => {
-        this.persistDataLocally();
-        this.syncDataWithTheServer();
-    };
-
-    syncDataWithTheServer = () => {
-
-    };
-
-    persistDataLocally = () => {
+        // persists to localStorage
         localStorage.setItem( 'projects', JSON.stringify( this.state.projects ) );
         localStorage.setItem( 'lastActiveProjectIndex', this.state.lastActiveProjectIndex );
+    };
+
+    syncDataWithTheServer = async () => {
+        try {
+            const { projects, lastActiveProjectIndex } = this.state;
+            const project = projects[ lastActiveProjectIndex ];
+            // we will be sending last session
+            const session = project.sessions[ project.sessions.length - 1 ];
+            const res = await fetch( 'http://localhost:3000/sessions/savesession', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify( { ...session, name: project.name } ),
+            } );
+            const data = await res.json();
+            console.log( data );
+        } catch ( e ) {
+            console.log( e )
+        }
     };
 
     buildProjectItem = () => {
@@ -125,7 +138,7 @@ class App extends React.Component {
         this.setState( ( { projects } ) => ({
             newProjectName: '',
             projects: [ ...copy( projects ), newProject ]
-        }), this.persistDataLocally )
+        }), this.onDataChange )
     };
 
     onProject = project => {
@@ -198,7 +211,12 @@ class App extends React.Component {
         this.setState( {
             isTracking: false,
             projects: projects.map( p => (p === project ? newProject : { ...p }) )
-        }, this.onDataChange )
+        }, () => {
+            this.onDataChange();
+            // we sync data with the server every time the user stops session
+            // TODO: this is not the best approach, save session every some minutes when time tracking is running
+            this.syncDataWithTheServer();
+        } )
     };
 
     onEdit = project => {
@@ -281,16 +299,16 @@ class App extends React.Component {
 
         // TODO: the next is just for fast prototyping, I will use "reselect" for that in the future
         let filteredSessions = [], totalTimeWorkedWithinRange = 0;
-        if (overviewProject) {
-            for (let s of overviewProject.sessions) {
-                if ( s.startTime >= overviewStartDate && s.endTime <= overviewEndDate  ) {
+        if ( overviewProject ) {
+            for ( let s of overviewProject.sessions ) {
+                if ( s.startTime >= overviewStartDate && s.endTime <= overviewEndDate ) {
                     filteredSessions.push( { ...s } );
-                    const diff = (s.endTime - s.startTime)/1000;
+                    const diff = (s.endTime - s.startTime) / 1000;
                     totalTimeWorkedWithinRange += diff;
                 }
             }
         }
-        totalTimeWorkedWithinRange = Math.abs(totalTimeWorkedWithinRange);
+        totalTimeWorkedWithinRange = Math.abs( totalTimeWorkedWithinRange );
 
         return (
             <Tabs defaultActiveKey="timetracker" onSelect={this.onTabChange}>
@@ -316,7 +334,7 @@ class App extends React.Component {
                                     />
                                 </InputGroup>
                             </Row>
-                            <Row style={{marginTop: 50}}>
+                            <Row style={{ marginTop: 50 }}>
                                 <h4>Projects</h4>
                             </Row>
                             <Row className="row-margin">
@@ -423,12 +441,13 @@ class App extends React.Component {
                                 onChange={this.onDateRangeChange}
                             />
                             {
-                                <p>Time worked withing selected time range: {secondsToTime(totalTimeWorkedWithinRange)}</p>
+                                <p>Time worked withing selected time
+                                    range: {secondsToTime( totalTimeWorkedWithinRange )}</p>
                             }
                             {
                                 filteredSessions
                                     .map( ( s, index ) => <p key={"ov" + s.startTime.toString()}>
-                                        {`Session ${index+1}:  ${getFormattedDateAndTime(s.startTime)} - ${getFormattedDateAndTime(s.endTime)}`}
+                                        {`Session ${index + 1}:  ${getFormattedDateAndTime( s.startTime )} - ${getFormattedDateAndTime( s.endTime )}`}
                                     </p> )
                             }
                         </Container>
