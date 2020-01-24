@@ -57062,7 +57062,7 @@ function (_React$Component) {
     (0, _asyncToGenerator2.default)(
     /*#__PURE__*/
     _regenerator.default.mark(function _callee() {
-      var _this$state, projects, lastActiveProjectIndex, project, session, res, data;
+      var _this$state, projects, lastActiveProjectIndex, project, session, query, res, data;
 
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) {
@@ -57073,40 +57073,45 @@ function (_React$Component) {
               project = projects[lastActiveProjectIndex]; // we will be sending last session
 
               session = project.sessions[project.sessions.length - 1];
-              _context.next = 6;
-              return fetch('http://localhost:3000/sessions/savesession', {
+              query = "mutation SetSession($id: String!, $name: String!, $startTime: String!, $endTime: String!) {\n              setSession(id: $id, name: $name, startTime: $startTime, endTime: $endTime)\n            }";
+              _context.next = 7;
+              return fetch('http://localhost:3000/graphql', {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(_objectSpread({}, session, {
-                  name: project.name
-                }))
+                body: JSON.stringify({
+                  query: query,
+                  variables: _objectSpread({}, session, {
+                    id: project.ID,
+                    name: project.name
+                  })
+                })
               });
 
-            case 6:
+            case 7:
               res = _context.sent;
-              _context.next = 9;
+              _context.next = 10;
               return res.json();
 
-            case 9:
+            case 10:
               data = _context.sent;
               console.log(data);
-              _context.next = 16;
+              _context.next = 17;
               break;
 
-            case 13:
-              _context.prev = 13;
+            case 14:
+              _context.prev = 14;
               _context.t0 = _context["catch"](0);
               console.log(_context.t0);
 
-            case 16:
+            case 17:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, null, [[0, 13]]);
+      }, _callee, null, [[0, 14]]);
     }));
 
     _this.buildProjectItem = function () {
@@ -64427,7 +64432,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "58303" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52034" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

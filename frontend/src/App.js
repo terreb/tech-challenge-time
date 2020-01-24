@@ -102,13 +102,23 @@ class App extends React.Component {
             const project = projects[ lastActiveProjectIndex ];
             // we will be sending last session
             const session = project.sessions[ project.sessions.length - 1 ];
-            const res = await fetch( 'http://localhost:3000/sessions/savesession', {
+            const query = `mutation SetSession($id: String!, $name: String!, $startTime: String!, $endTime: String!) {
+              setSession(id: $id, name: $name, startTime: $startTime, endTime: $endTime)
+            }`;
+            const res = await fetch( 'http://localhost:3000/graphql', {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify( { ...session, name: project.name } ),
+                body: JSON.stringify( {
+                    query,
+                    variables: {
+                        ...session,
+                        id: project.ID,
+                        name: project.name
+                    }
+                } ),
             } );
             const data = await res.json();
             console.log( data );
