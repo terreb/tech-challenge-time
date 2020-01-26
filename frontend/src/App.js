@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DateRangePicker } from 'react-date-range';
 import { uuidv4, secondsToTime, addDays, copy, getFormattedDateAndTime } from './helpers';
 import './styles.css';
+import { addSession, deleteProject, renameProject } from './api';
 
 class App extends React.Component {
 
@@ -96,36 +97,22 @@ class App extends React.Component {
         localStorage.setItem( 'lastActiveProjectIndex', this.state.lastActiveProjectIndex );
     };
 
-    syncDataWithTheServer = async () => {
-        try {
-            const { projects, lastActiveProjectIndex } = this.state;
-            const project = projects[ lastActiveProjectIndex ];
-            // we will be sending last session
-            const session = project.sessions[ project.sessions.length - 1 ];
-            const query = `mutation SetSession($id: String!, $name: String!, $startTime: String!, $endTime: String!) {
-              setSession(id: $id, name: $name, startTime: $startTime, endTime: $endTime)
-            }`;
-            const res = await fetch( 'http://localhost:3000/graphql', {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify( {
-                    query,
-                    variables: {
-                        ...session,
-                        id: project.ID,
-                        name: project.name
-                    }
-                } ),
-            } );
-            const data = await res.json();
-            console.log( data );
-        } catch ( e ) {
-            console.log( e )
-        }
+    addSessionAPI = async () => {
+        const { projects, lastActiveProjectIndex } = this.state;
+        const project = projects[ lastActiveProjectIndex ];
+        // we will be sending last session
+        const session = project.sessions[ project.sessions.length - 1 ];
+        const variables = {
+            session,
+            id: project.ID,
+            name: project.name
+        };
+        return addSession( variables );
     };
+
+    deleteProjectAPI = async id => deleteProject( { id } );
+
+    renameProjectAPI = async ( id, name ) => renameProject( { id, name } );
 
     buildProjectItem = () => {
         return {
@@ -143,15 +130,26 @@ class App extends React.Component {
     onAddNewProject = event => {
         if ( event ) event.preventDefault();
 
+        if (!this.state.newProjectName) {
+            alert( 'You occasionally clicked "Add" right? Let\'s give it a name.' );
+            return;
+        }
+
         const newProject = this.buildProjectItem();
 
         this.setState( ( { projects } ) => ({
             newProjectName: '',
             projects: [ ...copy( projects ), newProject ]
-        }), this.onDataChange )
+        }), () => {
+
+            if ( this.state.lastActiveProjectIndex === null )
+                this.setProjectActive( newProject );
+            else
+                this.onDataChange();
+        } )
     };
 
-    onProject = project => {
+    setProjectActive = project => {
         // this project is already active
         if ( this.isActiveProject( project ) ) return;
 
@@ -225,12 +223,14 @@ class App extends React.Component {
             this.onDataChange();
             // we sync data with the server every time the user stops session
             // TODO: this is not the best approach, save session every some minutes when time tracking is running
-            this.syncDataWithTheServer();
+            this.addSessionAPI();
         } )
     };
 
     onEdit = project => {
-        this.setState( { showModal: true, modalProject: { ...project }, modalProjectName: project.name } )
+        this.setState( {
+            showModal: true, modalProject: { ...project }, modalProjectName: project.name
+        } )
     };
 
     onDelete = project => {
@@ -252,7 +252,12 @@ class App extends React.Component {
             .filter( p => p !== project )
             .map( p => ({ ...p }) );
 
-        this.setState( { projects: updatedProjects, lastActiveProjectIndex }, this.onDataChange );
+        this.setState( {
+            projects: updatedProjects, lastActiveProjectIndex
+        }, () => {
+            this.onDataChange();
+            this.deleteProjectAPI( project.ID );
+        } );
     };
 
     onModalHide = () => {
@@ -261,6 +266,8 @@ class App extends React.Component {
 
     onModalConfirm = () => {
         const { modalProject, modalProjectName, projects } = this.state;
+
+        this.renameProjectAPI( modalProject.ID,  modalProjectName );
 
         this.setState( {
             showModal: false,
@@ -376,11 +383,11 @@ class App extends React.Component {
                                     {
                                         projects.map( p =>
                                             <tr key={p.ID}>
-                                                <td onClick={() => this.onProject( p )}>
+                                                <td onClick={() => this.setProjectActive( p )}>
                                                     <FontAwesomeIcon icon={p.isActive ? "dot-circle" : "circle"}/>
                                                 </td>
-                                                <td onClick={() => this.onProject( p )}>{p.name}</td>
-                                                <td onClick={() => this.onProject( p )}>{secondsToTime( p.totalTimeWorked )}</td>
+                                                <td onClick={() => this.setProjectActive( p )}>{p.name}</td>
+                                                <td onClick={() => this.setProjectActive( p )}>{secondsToTime( p.totalTimeWorked )}</td>
                                                 <td>
                                                     <ButtonGroup>
                                                         <Button variant="outline-secondary"
