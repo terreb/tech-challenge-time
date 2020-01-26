@@ -31730,7 +31730,24 @@ if ("development" === 'production') {
 } else {
   module.exports = require('./cjs/react-dom.development.js');
 }
-},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
+},{"./cjs/react-dom.development.js":"node_modules/react-dom/cjs/react-dom.development.js"}],"node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
+function _defineProperty(obj, key, value) {
+  if (key in obj) {
+    Object.defineProperty(obj, key, {
+      value: value,
+      enumerable: true,
+      configurable: true,
+      writable: true
+    });
+  } else {
+    obj[key] = value;
+  }
+
+  return obj;
+}
+
+module.exports = _defineProperty;
+},{}],"node_modules/@babel/runtime/helpers/arrayWithoutHoles.js":[function(require,module,exports) {
 function _arrayWithoutHoles(arr) {
   if (Array.isArray(arr)) {
     for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
@@ -32497,24 +32514,7 @@ try {
 },{}],"node_modules/@babel/runtime/regenerator/index.js":[function(require,module,exports) {
 module.exports = require("regenerator-runtime");
 
-},{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/@babel/runtime/helpers/defineProperty.js":[function(require,module,exports) {
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
-
-module.exports = _defineProperty;
-},{}],"node_modules/@babel/runtime/helpers/asyncToGenerator.js":[function(require,module,exports) {
+},{"regenerator-runtime":"node_modules/regenerator-runtime/runtime.js"}],"node_modules/@babel/runtime/helpers/asyncToGenerator.js":[function(require,module,exports) {
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
   try {
     var info = gen[key](arg);
@@ -56938,7 +56938,101 @@ var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/App.js":[function(require,module,exports) {
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/api.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.renameProject = exports.deleteProject = exports.addSession = void 0;
+
+var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
+
+var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var sendRequest =
+/*#__PURE__*/
+function () {
+  var _ref = (0, _asyncToGenerator2.default)(
+  /*#__PURE__*/
+  _regenerator.default.mark(function _callee(query, variables) {
+    var res, data;
+    return _regenerator.default.wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.prev = 0;
+            _context.next = 3;
+            return fetch('http://localhost:3000/graphql', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                query: query,
+                variables: variables
+              })
+            });
+
+          case 3:
+            res = _context.sent;
+            _context.next = 6;
+            return res.json();
+
+          case 6:
+            data = _context.sent;
+            console.log(data);
+            return _context.abrupt("return", true);
+
+          case 11:
+            _context.prev = 11;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
+            return _context.abrupt("return", false);
+
+          case 15:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee, null, [[0, 11]]);
+  }));
+
+  return function sendRequest(_x, _x2) {
+    return _ref.apply(this, arguments);
+  };
+}();
+
+var addSession = function addSession(variables) {
+  var query = "mutation AddSession($id: String!, $name: String, $session: SessionInput!) {\n      addSession(id: $id, name: $name, session: $session)\n    }";
+  return sendRequest(query, variables);
+};
+
+exports.addSession = addSession;
+
+var deleteProject = function deleteProject(variables) {
+  var query = "mutation DeleteProject($id: String) {\n      deleteProject(id: $id)\n    }";
+  return sendRequest(query, variables);
+};
+
+exports.deleteProject = deleteProject;
+
+var renameProject = function renameProject(variables) {
+  var query = "mutation RenameProject($id: String!, $name: String!) {\n      renameProject(id: $id, name: $name)\n    }";
+  return sendRequest(query, variables);
+}; // export const getSessions = variables => {
+//     const query = `mutation SetSession($id: String!, $name: String!, $startTime: String!, $endTime: String!) {
+//       setSession(id: $id, name: $name, startTime: $startTime, endTime: $endTime)
+//     }`;
+//     return sendRequest( query, variables );
+// };
+
+
+exports.renameProject = renameProject;
+},{"@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js"}],"src/App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -56946,11 +57040,11 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
+var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
+
 var _toConsumableArray2 = _interopRequireDefault(require("@babel/runtime/helpers/toConsumableArray"));
 
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
-var _defineProperty2 = _interopRequireDefault(require("@babel/runtime/helpers/defineProperty"));
 
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
 
@@ -56975,6 +57069,8 @@ var _reactDateRange = require("react-date-range");
 var _helpers = require("./helpers");
 
 require("./styles.css");
+
+var _api = require("./api");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -57057,62 +57153,90 @@ function (_React$Component) {
       localStorage.setItem('lastActiveProjectIndex', _this.state.lastActiveProjectIndex);
     };
 
-    _this.syncDataWithTheServer =
+    _this.addSessionAPI =
     /*#__PURE__*/
     (0, _asyncToGenerator2.default)(
     /*#__PURE__*/
     _regenerator.default.mark(function _callee() {
-      var _this$state, projects, lastActiveProjectIndex, project, session, query, res, data;
+      var _this$state, projects, lastActiveProjectIndex, project, session, variables;
 
       return _regenerator.default.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
               _this$state = _this.state, projects = _this$state.projects, lastActiveProjectIndex = _this$state.lastActiveProjectIndex;
               project = projects[lastActiveProjectIndex]; // we will be sending last session
 
               session = project.sessions[project.sessions.length - 1];
-              query = "mutation SetSession($id: String!, $name: String!, $startTime: String!, $endTime: String!) {\n              setSession(id: $id, name: $name, startTime: $startTime, endTime: $endTime)\n            }";
-              _context.next = 7;
-              return fetch('http://localhost:3000/graphql', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  query: query,
-                  variables: _objectSpread({}, session, {
-                    id: project.ID,
-                    name: project.name
-                  })
-                })
-              });
+              variables = {
+                session: session,
+                id: project.ID,
+                name: project.name
+              };
+              return _context.abrupt("return", (0, _api.addSession)(variables));
 
-            case 7:
-              res = _context.sent;
-              _context.next = 10;
-              return res.json();
-
-            case 10:
-              data = _context.sent;
-              console.log(data);
-              _context.next = 17;
-              break;
-
-            case 14:
-              _context.prev = 14;
-              _context.t0 = _context["catch"](0);
-              console.log(_context.t0);
-
-            case 17:
+            case 5:
             case "end":
               return _context.stop();
           }
         }
-      }, _callee, null, [[0, 14]]);
+      }, _callee);
     }));
+
+    _this.deleteProjectAPI =
+    /*#__PURE__*/
+    function () {
+      var _ref2 = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee2(id) {
+        return _regenerator.default.wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                return _context2.abrupt("return", (0, _api.deleteProject)({
+                  id: id
+                }));
+
+              case 1:
+              case "end":
+                return _context2.stop();
+            }
+          }
+        }, _callee2);
+      }));
+
+      return function (_x) {
+        return _ref2.apply(this, arguments);
+      };
+    }();
+
+    _this.renameProjectAPI =
+    /*#__PURE__*/
+    function () {
+      var _ref3 = (0, _asyncToGenerator2.default)(
+      /*#__PURE__*/
+      _regenerator.default.mark(function _callee3(id, name) {
+        return _regenerator.default.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                return _context3.abrupt("return", (0, _api.renameProject)({
+                  id: id,
+                  name: name
+                }));
+
+              case 1:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      return function (_x2, _x3) {
+        return _ref3.apply(this, arguments);
+      };
+    }();
 
     _this.buildProjectItem = function () {
       return {
@@ -57136,18 +57260,25 @@ function (_React$Component) {
     _this.onAddNewProject = function (event) {
       if (event) event.preventDefault();
 
+      if (!_this.state.newProjectName) {
+        alert('You occasionally clicked "Add" right? Let\'s give it a name.');
+        return;
+      }
+
       var newProject = _this.buildProjectItem();
 
-      _this.setState(function (_ref2) {
-        var projects = _ref2.projects;
+      _this.setState(function (_ref4) {
+        var projects = _ref4.projects;
         return {
           newProjectName: '',
           projects: [].concat((0, _toConsumableArray2.default)((0, _helpers.copy)(projects)), [newProject])
         };
-      }, _this.onDataChange);
+      }, function () {
+        if (_this.state.lastActiveProjectIndex === null) _this.setProjectActive(newProject);else _this.onDataChange();
+      });
     };
 
-    _this.onProject = function (project) {
+    _this.setProjectActive = function (project) {
       // this project is already active
       if (_this.isActiveProject(project)) return;
 
@@ -57239,7 +57370,7 @@ function (_React$Component) {
         // TODO: this is not the best approach, save session every some minutes when time tracking is running
 
 
-        _this.syncDataWithTheServer();
+        _this.addSessionAPI();
       });
     };
 
@@ -57275,7 +57406,11 @@ function (_React$Component) {
       _this.setState({
         projects: updatedProjects,
         lastActiveProjectIndex: lastActiveProjectIndex
-      }, _this.onDataChange);
+      }, function () {
+        _this.onDataChange();
+
+        _this.deleteProjectAPI(project.ID);
+      });
     };
 
     _this.onModalHide = function () {
@@ -57291,6 +57426,8 @@ function (_React$Component) {
           modalProject = _this$state5.modalProject,
           modalProjectName = _this$state5.modalProjectName,
           projects = _this$state5.projects;
+
+      _this.renameProjectAPI(modalProject.ID, modalProjectName);
 
       _this.setState({
         showModal: false,
@@ -57324,8 +57461,8 @@ function (_React$Component) {
       });
     };
 
-    _this.onDateRangeChange = function (_ref3) {
-      var selection = _ref3.selection;
+    _this.onDateRangeChange = function (_ref5) {
+      var selection = _ref5.selection;
 
       _this.setState({
         overviewStartDate: selection.startDate,
@@ -57412,10 +57549,10 @@ function (_React$Component) {
           overviewStartDate = _this$state7.overviewStartDate,
           overviewEndDate = _this$state7.overviewEndDate;
 
-      var _ref4 = projects[lastActiveProjectIndex] || {},
-          name = _ref4.name,
-          lastSessionWorkTime = _ref4.lastSessionWorkTime,
-          totalTimeWorked = _ref4.totalTimeWorked; // TODO: the next is just for fast prototyping, I will use "reselect" for that in the future
+      var _ref6 = projects[lastActiveProjectIndex] || {},
+          name = _ref6.name,
+          lastSessionWorkTime = _ref6.lastSessionWorkTime,
+          totalTimeWorked = _ref6.totalTimeWorked; // TODO: the next is just for fast prototyping, I will use "reselect" for that in the future
 
 
       var filteredSessions = [],
@@ -57504,17 +57641,17 @@ function (_React$Component) {
           key: p.ID
         }, _react.default.createElement("td", {
           onClick: function onClick() {
-            return _this3.onProject(p);
+            return _this3.setProjectActive(p);
           }
         }, _react.default.createElement(_reactFontawesome.FontAwesomeIcon, {
           icon: p.isActive ? "dot-circle" : "circle"
         })), _react.default.createElement("td", {
           onClick: function onClick() {
-            return _this3.onProject(p);
+            return _this3.setProjectActive(p);
           }
         }, p.name), _react.default.createElement("td", {
           onClick: function onClick() {
-            return _this3.onProject(p);
+            return _this3.setProjectActive(p);
           }
         }, (0, _helpers.secondsToTime)(p.totalTimeWorked)), _react.default.createElement("td", null, _react.default.createElement(_reactBootstrap.ButtonGroup, null, _react.default.createElement(_reactBootstrap.Button, {
           variant: "outline-secondary",
@@ -57584,7 +57721,7 @@ function (_React$Component) {
 
 var _default = App;
 exports.default = _default;
-},{"@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","@fortawesome/react-fontawesome":"node_modules/@fortawesome/react-fontawesome/index.es.js","react-date-range":"node_modules/react-date-range/dist/index.js","./helpers":"src/helpers.js","./styles.css":"src/styles.css"}],"node_modules/bootstrap/dist/css/bootstrap.min.css":[function(require,module,exports) {
+},{"@babel/runtime/helpers/defineProperty":"node_modules/@babel/runtime/helpers/defineProperty.js","@babel/runtime/helpers/toConsumableArray":"node_modules/@babel/runtime/helpers/toConsumableArray.js","@babel/runtime/regenerator":"node_modules/@babel/runtime/regenerator/index.js","@babel/runtime/helpers/asyncToGenerator":"node_modules/@babel/runtime/helpers/asyncToGenerator.js","@babel/runtime/helpers/classCallCheck":"node_modules/@babel/runtime/helpers/classCallCheck.js","@babel/runtime/helpers/createClass":"node_modules/@babel/runtime/helpers/createClass.js","@babel/runtime/helpers/possibleConstructorReturn":"node_modules/@babel/runtime/helpers/possibleConstructorReturn.js","@babel/runtime/helpers/getPrototypeOf":"node_modules/@babel/runtime/helpers/getPrototypeOf.js","@babel/runtime/helpers/inherits":"node_modules/@babel/runtime/helpers/inherits.js","react":"node_modules/react/index.js","react-bootstrap":"node_modules/react-bootstrap/esm/index.js","@fortawesome/react-fontawesome":"node_modules/@fortawesome/react-fontawesome/index.es.js","react-date-range":"node_modules/react-date-range/dist/index.js","./helpers":"src/helpers.js","./styles.css":"src/styles.css","./api":"src/api.js"}],"node_modules/bootstrap/dist/css/bootstrap.min.css":[function(require,module,exports) {
 var reloadCSS = require('_css_loader');
 
 module.hot.dispose(reloadCSS);
@@ -64432,7 +64569,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "52034" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "59299" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

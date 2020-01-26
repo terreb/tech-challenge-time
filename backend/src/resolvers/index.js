@@ -1,9 +1,11 @@
 'use strict';
 
-const { getSessions, setSession } = require( './sessions' );
+const { getSessions, addSession, deleteProject, renameProject } = require( './sessions' );
 
 module.exports = {
     sanity: () => 'No worries, I\'m ok!',
-    getSessions: () => getSessions(),
-    setSession: session => setSession( session )
+    getSessions: getSessions,
+    addSession: addSession,
+    deleteSession: deleteProject,
+    renameProject: renameProject
 };

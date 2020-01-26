@@ -1,22 +1,30 @@
 'use strict';
 
-const { buildSchema } = require("graphql");
+const { buildSchema } = require( 'graphql' );
 
-const schema = buildSchema(`
+const schema = buildSchema( `
+  input SessionInput {
+    startTime: String!,
+    endTime: String!
+  }
   type Session {
-    id: String,
-    name: String,
-    startTime: String,
-    endTime: String
+    startTime: String!,
+    endTime: String!
   },
   type Mutation {
-    setSession(id: String!, name: String!, startTime: String!, endTime: String!): Boolean
+    addSession(id: String!, name: String, session: SessionInput!): Boolean,
+    deleteProject(id: String): Boolean,
+    renameProject(id: String, name: String): Boolean
+  }
+  type Sessions {
+    id: String,
+    name: String,
+    sessions: [Session]
   }
   type Query {
-    hello: String,
-    getSession(id: String!): Session,
-    getSessions: [Session],
+    sanity: String,
+    getSessions(id: String): [Sessions]
   }
-`);
+` );
 
 module.exports = schema;
